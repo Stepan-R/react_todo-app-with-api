@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const timeOutRef = useRef<NodeJS.Timeout | number>(0);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [loadAll, setLoadAll] = useState(false);
+  const [updatingIds, setUpdatingIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -168,7 +168,6 @@ export const App: React.FC = () => {
 
   const updateTodo = (updatedTodo: Todo): Promise<void> => {
     setUpdatingId(updatedTodo.id);
-    setLoadAll(true);
 
     return todoService
       .updateTodo(updatedTodo)
@@ -185,7 +184,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setUpdatingId(null);
         inputRef.current?.blur();
-        setLoadAll(false);
       });
   };
 
@@ -210,14 +208,20 @@ export const App: React.FC = () => {
     if (todos.find(todo => !todo.completed)) {
       const completedTodos = todos.filter(todo => !todo.completed);
 
-      completedTodos.map(todo => {
-        updateTodo({ ...todo, completed: true });
+      completedTodos.map(async todo => {
+        setUpdatingIds(ids => [...ids, todo.id]);
+        updateTodo({ ...todo, completed: true }).finally(() => {
+          setUpdatingIds(ids => ids.filter(id => id !== todo.id));
+        });
       });
     } else {
       const activeTodos = todos.filter(todo => todo.completed);
 
-      activeTodos.map(todo => {
-        updateTodo({ ...todo, completed: false });
+      activeTodos.map(async todo => {
+        setUpdatingIds(ids => [...ids, todo.id]);
+        updateTodo({ ...todo, completed: false }).finally(() => {
+          setUpdatingIds(ids => ids.filter(id => id !== todo.id));
+        });
       });
     }
   };
@@ -247,7 +251,7 @@ export const App: React.FC = () => {
           updateTodo={updateTodo}
           updatingId={updatingId}
           inputRef={inputRef}
-          loadAll={loadAll}
+          updatingIds={updatingIds}
         />
 
         <Footer

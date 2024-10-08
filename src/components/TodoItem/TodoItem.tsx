@@ -10,7 +10,7 @@ type Props = {
   updateTodo: (todo: Todo) => void;
   updatingId: number | null;
   inputRef: React.RefObject<HTMLInputElement>;
-  loadAll: boolean;
+  updatingIds: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -20,7 +20,7 @@ export const TodoItem: React.FC<Props> = ({
   updateTodo,
   updatingId,
   inputRef,
-  loadAll,
+  updatingIds,
 }) => {
   const { completed, id, title } = todo;
   const [isUpdating, setIsUpdating] = useState(false);
@@ -127,7 +127,8 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': deletingId === id || updatingId === id || loadAll,
+          'is-active':
+            deletingId === id || updatingId === id || updatingIds.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

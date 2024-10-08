@@ -11,7 +11,7 @@ type Props = {
   updateTodo: (todo: Todo) => void;
   updatingId: number | null;
   inputRef: React.RefObject<HTMLInputElement>;
-  loadAll: boolean;
+  updatingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -22,7 +22,7 @@ export const TodoList: React.FC<Props> = ({
   updateTodo,
   updatingId,
   inputRef,
-  loadAll,
+  updatingIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -35,7 +35,7 @@ export const TodoList: React.FC<Props> = ({
           updateTodo={updateTodo}
           updatingId={updatingId}
           inputRef={inputRef}
-          loadAll={loadAll}
+          updatingIds={updatingIds}
         />
       ))}
 
